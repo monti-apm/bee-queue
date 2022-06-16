@@ -1,4 +1,4 @@
-import {describe} from 'ava-spec';
+import {describe} from 'jest';
 import * as url from 'url';
 
 import Queue from '../lib/queue';

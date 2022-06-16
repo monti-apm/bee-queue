@@ -1,4 +1,4 @@
-import {describe} from 'ava-spec';
+import {describe} from 'jest';
 
 import Job from '../lib/job';
 import Queue from '../lib/queue';
