@@ -8,6 +8,9 @@
     "promise-callbacks": "^3.8.1",
     "redis": "^3.1.2"
   },
+  "ava": {
+    "failWithoutAssertions": false
+  },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
@@ -19,12 +22,12 @@
     "@semantic-release/npm": "^9.0.1",
     "@semantic-release/release-notes-generator": "^10.0.3",
     "@sinonjs/fake-timers": "^9.1.2",
-    "ava": "^3.15.0",
+    "ava": "^4.3.0",
     "conventional-changelog-conventionalcommits": "^4.4.0",
     "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.2",
-    "jest": "^28.1.1",
+    "ava-spec": "^1.1.1",
     "nyc": "^15.0.1",
     "prettier": "^2.0.4",
     "sandboxed-module": "^2.0.3",
