@@ -1,10 +1,10 @@
-import {describe} from 'ava-spec';
+const {describe} = require('ava-spec');
 
-import Job from '../lib/job';
-import Queue from '../lib/queue';
-import helpers from '../lib/helpers';
+const Job = require('../lib/job');
+const Queue = require('../lib/queue');
+const helpers = require('../lib/helpers');
 
-import {promisify} from 'promise-callbacks';
+const {promisify} = require('promise-callbacks');
 
 describe('Job', (it) => {
   const redisUrl = process.env.BEE_QUEUE_TEST_REDIS;
@@ -32,7 +32,7 @@ describe('Job', (it) => {
 
   it.afterEach.cb((t) => {
     const {queue} = t.context;
-    clearKeys(queue.client, queue, t.end);
+    clearKeys(queue.client, queue, t.pass);
   });
 
   it('creates a job', async (t) => {
@@ -53,7 +53,7 @@ describe('Job', (it) => {
 
   it.cb('should save with a callback', (t) => {
     const {queue} = t.context;
-    queue.createJob().save(t.end);
+    queue.createJob().save(t.pass);
   });
 
   it.describe('Chaining', (it) => {
@@ -67,9 +67,12 @@ describe('Job', (it) => {
     it('rejects invalid retries count', (t) => {
       const {queue} = t.context;
 
-      t.throws(() => {
-        queue.createJob({foo: 'bar'}).retries(-1);
-      }, 'Retries cannot be negative');
+      t.throws(
+        () => {
+          queue.createJob({foo: 'bar'}).retries(-1);
+        },
+        {message: 'Retries cannot be negative'}
+      );
     });
 
     it('should reject invalid delay timestamps', (t) => {
@@ -78,10 +81,10 @@ describe('Job', (it) => {
       const job = queue.createJob({foo: 'bar'});
       t.notThrows(() => job.delayUntil(new Date(Date.now() + 10000)));
       t.notThrows(() => job.delayUntil(Date.now() + 10000));
-      t.throws(() => job.delayUntil(null), /timestamp/i);
-      t.throws(() => job.delayUntil(NaN), /timestamp/i);
-      t.throws(() => job.delayUntil('wobble'), /timestamp/i);
-      t.throws(() => job.delayUntil(-8734), /timestamp/i);
+      t.throws(() => job.delayUntil(null), {message: /timestamp/i});
+      t.throws(() => job.delayUntil(NaN), {message: /timestamp/i});
+      t.throws(() => job.delayUntil('wobble'), {message: /timestamp/i});
+      t.throws(() => job.delayUntil(-8734), {message: /timestamp/i});
     });
 
     it('should not save a delay to a past date', (t) => {
@@ -103,9 +106,14 @@ describe('Job', (it) => {
     it('rejects invalid timeout', (t) => {
       const {queue} = t.context;
 
-      t.throws(() => {
-        queue.createJob({foo: 'bar'}).timeout(-1);
-      }, 'Timeout cannot be negative');
+      t.throws(
+        () => {
+          queue.createJob({foo: 'bar'}).timeout(-1);
+        },
+        {
+          message: 'Timeout cannot be negative',
+        }
+      );
     });
 
     it('saves the job in redis', async (t) => {
@@ -125,7 +133,9 @@ describe('Job', (it) => {
       const {makeJob} = t.context;
 
       const job = await makeJob();
-      await t.throws(job.reportProgress(), 'Progress cannot be empty');
+      await t.throwsAsync(() => job.reportProgress(), {
+        message: 'Progress cannot be empty',
+      });
     });
 
     it('should support passing a data object', async (t) => {
@@ -145,7 +155,7 @@ describe('Job', (it) => {
     it.cb('should support callbacks', (t) => {
       const {makeJob} = t.context;
 
-      makeJob().then((job) => job.reportProgress(50, t.end), t.end);
+      makeJob().then((job) => job.reportProgress(50, t.pass), t.pass);
     });
   });
 
@@ -178,8 +188,7 @@ describe('Job', (it) => {
   it.describe('Retry', (it) => {
     it.cb('should support callbacks', (t) => {
       const {makeJob} = t.context;
-
-      makeJob().then((job) => job.retry(t.end), t.end);
+      makeJob().then((job) => job.retry(t.pass), t.pass);
     });
   });
 
@@ -187,12 +196,12 @@ describe('Job', (it) => {
     it.cb('should support callbacks', (t) => {
       const {makeJob} = t.context;
 
-      makeJob().then((job) => job.isInSet('stalling', next), t.end);
+      makeJob().then((job) => job.isInSet('stalling', next), t.pass);
 
       function next(err, inSet) {
-        t.ifError(err);
+        t.falsy(err);
         t.is(inSet, false);
-        t.end();
+        t.pass();
       }
     });
   });
