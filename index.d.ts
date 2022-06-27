@@ -99,6 +99,7 @@ declare namespace BeeQueue {
     removeOnFailure?: boolean;
     quitCommandClient?: boolean;
     redisScanCount?: number;
+    clearMissingJobs?: boolean;
   }
 
   interface Job<T> extends EventEmitter {
